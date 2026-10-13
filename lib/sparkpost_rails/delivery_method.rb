@@ -158,23 +158,24 @@ module SparkPostRails
     def prepare_inline_content_from mail, sparkpost_data
       if mail.multipart?
         if mail.html_part
-          @data[:content][:html] = cleanse_encoding(mail.html_part.body.to_s)
+          @data[:content][:html] = cleanse_encoding(mail.html_part.body.to_s, mail.html_part.charset)
         end
 
         if mail.text_part
-          @data[:content][:text] = cleanse_encoding(mail.text_part.body.to_s)
+          @data[:content][:text] = cleanse_encoding(mail.text_part.body.to_s, mail.text_part.charset)
         end
       else
         if SparkPostRails.configuration.html_content_only || sparkpost_data[:html_content_only]
-          @data[:content][:html] = cleanse_encoding(mail.body.to_s)
+          @data[:content][:html] = cleanse_encoding(mail.body.to_s, mail.charset)
         else
-          @data[:content][:text] = cleanse_encoding(mail.body.to_s)
+          @data[:content][:text] = cleanse_encoding(mail.body.to_s, mail.charset)
         end
       end
     end
 
-    def cleanse_encoding content
-      ::JSON.parse({c: content}.to_json)["c"]
+    def cleanse_encoding content, charset
+      # Decoded MIME bodies may have binary encoding; assume UTF-8 when no charset is declared.
+      content.dup.force_encoding(charset || 'UTF-8').encode('UTF-8')
     end
 
     def prepare_attachments_from mail

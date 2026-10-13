@@ -1,3 +1,12 @@
+1.6.0
+==========
+
+* Support Rails 7 and Rails 8.
+* Fix JSON 3.1.0 compatibility by transcoding decoded email bodies from their declared MIME charset to UTF-8 instead of using a JSON round trip.
+* Use each multipart text or HTML body's own charset, and assume UTF-8 when no charset is declared. Invalid bytes raise rather than being dropped or replaced.
+* Add regression coverage for reconstructed MIME messages, Unicode, transfer encodings, legacy and missing charsets, HTML-only delivery, source preservation, attachments, and inline images.
+* Refresh development dependencies and update the development Ruby version to 4.0.7.
+
 1.5.3
 ==========
 
